@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TLE Area: Slow Internet – Root Cause Analysis (5 Whys)</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f3f6ff; /* pastel light blue */
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      background-color: #000000; /* pastel blue */
+      padding-left: 20px;
+      padding-top: 20px;
+      padding-right:20px;
+      border-bottom: 5px solid #000000;
+    }
+
+    header img {
+      width: 100px;
+      height: 100px;
+      vertical-align: middle;
+      border-radius: 50%;
+    }
+
+    header h1 {
+      margin: 10px 0 5px;
+      color: #ffffff;
+      font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+    }
+    
+    p.header {
+    color: #ffffff;
+  font-family: "Lucida Console", "Courier New", monospace;
+    }
+    
+        p.footer {
+    color: #000000;
+  font-family: "Lucida Console", "Courier New", monospace;
+    }
+    
+    
+    
+        p.header2 {
+    color: #ffffff;
+    font-weight: bold;
+    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+    }
+
+    nav {
+      background-color: #ffffff; /* pastel mint green */
+      padding: 12px;
+      text-align: center;
+    }
+
+    nav a {
+      color: #000000;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    
+      a {
+      color: #ffffff;
+  font-family: "Lucida Console", "Courier New", monospace;
+               font-weight: bold;
+    }
+    
+          a.link {
+      color: #000000;
+  font-family: "Lucida Console", "Courier New", monospace;
+               font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #8C8C8C; /* pastel pink */
+    }
+
+    li {
+                    font-family: Garamond, serif;
+                   font-size: 20px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.12);
+    }
+
+    h2 {
+      color: #000000;
+      border-bottom: 3px solid #C7C7C7;
+      padding-bottom: 5px;
+            text-align: center;
+    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+    }
+    
+
+    section {
+      margin-bottom: 40px;
+    }
+
+    blockquote {
+      font-style: italic;
+      background: #D6D6D6;
+      border-left: 5px solid #828282;
+      padding: 10px 20px;
+      margin: 15px 0;
+        font-family: "Lucida Console", "Courier New", monospace;
+    }
+
+    .why-box {
+      background-color: #333333; /* pastel pink */
+      border-left: 5px solid #9E9E9E;
+      padding: 10px 20px;
+      margin-bottom: 15px;
+      border-radius: 3px;
+  font-family: "Lucida Console", "Courier New", monospace;
+             color: #ffffff;
+    }
+
+    footer {
+      background-color: #ffffff;
+      color: #2a4d7a;
+      text-align: center;
+      padding: 18px 0;
+      margin-top: 40px;
+        font-family: "Lucida Console", "Courier New", monospace;
+    }
+
+    footer a {
+      color: #ffffff;
+      text-decoration: none;
+      margin: 0 10px;
+      
+        font-family: "Lucida Console", "Courier New", monospace;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+        font-family: "Lucida Console", "Courier New", monospace;
+    }
+    
+    p {
+     font-family: Garamond, serif;
+       font-size: 20px;
+    }
+    
+     img.mid {
+      border-radius: 5px;
+        border: 5px solid #000000;
+  margin: auto;
+    display: block;
+    }
+    
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <!-- ICT Logo -->
+    <img src="https://i.ibb.co/21vw60Ms/inbound6025275749554753117.png" alt="ICT Logo">
+    <h1>ㆍ TLE Area: Slow Internet ㆍ</h1>
+    <p class = header>Root Cause Analysis using the 5 Whys Technique</p>
+    <p class = header><strong>Group #2 – Life Labs 8, Quarter 3</strong></p>
+    <p class = header2 style="font-size: 24px;"><strong>Navigation</strong></p>
+  </header>
+
+  <nav>
+    <a href="#intro">Introduction</a>
+    <a href="#problem">Main Problem</a>
+    <a href="#analysis">Analysis</a>
+    <a href="#rootcause">Root Cause</a>
+    <a href="#solutions">Solutions</a>
+    <a href="#sources">Sources</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <h2>Introduction</h2>
+      <p>
+        This webpage explains our Root Cause Analysis (RCA) about the issue of <strong>Slow Internet</strong> in school and at home. We used the 5 Whys method to understand why slow internet happens and how we can help solve it. Since the internet is important for learning, this issue can affect students schoolwork and online schoolwork. As Grade 8 students, we analyzed the problem in a simple and clear way and shared some  solutions so we could help improve internet connection.
+      </p>
+    </section>
+
+    <section id="problem">
+      <h2>Main Problem</h2>
+      <p>
+        Many students experience <strong>Slow Internet</strong> when doing online tasks, research, or submitting activities, which makes studying more difficult. Because of poor connection, pages load slowly, files fail to upload, and online classes are interrupted. This causes delays, stress, and difficulty finishing school requirements on time, especially when deadlines are strict. As a result, students may feel frustrated, lose focus, and struggle to perform their best in school.
+      </p>
+    </section>
+    
+      <img class="mid" src="https://i.ibb.co/1fgkTb0p/Untitled-2.png" alt="image">
+
+    <section id="analysis">
+      <h2>Root Cause Analysis Using 5 Whys</h2>
+      <p>
+        Here is the 5 Whys breakdown to understand the real reason why slow internet happens:
+      </p>
+
+      <div class="why-box">
+        <strong>1st Why:</strong> Why is the internet slow?<br>
+        ➤ Several Factors affect Internet Speed, such as the quality of the Service Provider, the distance between the device, the amount of devices connected to the router and the router and the performance of the router itself.
+      </div>
+
+      <div class="why-box">
+        <strong>2nd Why:</strong> Why does it lag or load slowly?<br>
+        ➤ Because the router is handling too much devices connected to it, Many connected devices may be overwhelming and can cause overheating, as these devices may be doing heavy network activities such as downloading large files, streaming movies or installing games, which can slow down the network for everyone.
+      </div>
+
+      <div class="why-box">
+        <strong>3rd Why:</strong> Why are many devices connected?<br>
+        ➤ Because only one router is being used to support all the devices and buying more routers is expensive, as a result, all users rely on a single router, causing heavy lag or slowness.
+      </div>
+
+      <div class="why-box">
+        <strong>4th Why:</strong> Why cant the Internet handle it all?<br>
+        ➤ Because the internet plan does not provide enough speed or strength to support the connected devices all simultaneously connected to the router.
+      </div>
+
+      <div class="why-box">
+        <strong>5th Why:</strong> Why wasn’t the Internet plan based on usage needs?<br>
+        ➤ Because the internet plan is selected based off on budget rather than how many devices and applications require a dependable connection for each of the devices.
+      </div>
+
+      <blockquote>
+       <strong>Root Cause:</strong> 
+The root cause of the slow internet is the router or the internet being overwhelmed or overworked or overheated by too much devices sharing it and an internet plan that isnt strong enough or fast enough to be reliable for these devices, combined with a poor quality router, distance from the device to the router and the Service provider and more.
+      </blockquote>
+
+    </section>
+
+    <section id="rootcause">
+      <h2>Identified Root Cause</h2>
+      <p>
+        Many students experience slow internet when doing online tasks, researching, or submitting activities, and this makes studying more difficult. With a weak connection, pages take a long time to load, files sometimes fail to upload, and online classes get interrupted or lag during lessons. These problems cause delays, stress, and difficulty finishing school requirements on time, especially when deadlines are strict. Because of this, students may feel frustrated, lose focus, and struggle to perform at their best in school.
+
+After analyzing the situation, <strong>we found that the main reason for slow internet is that the internet plan being used is not fast enough for the number of devices connected. When many people in the household are online at the same time, the connection becomes crowded and the speed is divided, leading to slow browsing and unstable internet.</strong>
+      </p>
+    </section>
+    
+      <img class="mid" src="https://i.ibb.co/0VpVJmJW/inbound1238132746023514993.png" alt="image">
+
+    <section id="solutions">
+      <h2>Proposed Solutions and Preventive Measures</h2>
+      <ul>
+        <li>Upgrade to a better internet plan with higher speed and larger strength to support multiple devices and give a dependable connection for it.</li>
+        <li>Limit the number of connected devices during important events such as online classes or doing homework to reduce the lag during these times.</li>
+        <li>Place the router in an open and larged space area for it to have a large coverage among all the devices and to improve signal strength.</li>
+        <li>Do regular router resets to refresh the connection and to refresh the amount of the devices connected to the router.</li>
+        <li>Use an Ethernet cable for devices that require uninterupted, stable and depenendable internet connections during important events such as studying.</li>
+      </ul>
+    </section>
+    
+         <img class="mid" src="https://i.ibb.co/yF5wpNdT/Untitled-2-1.png" alt="image">
+
+    <section id="sources">
+      <h2>Resources / Sources</h2>
+      <ul>
+        <li><a class = link href="https://www.britannica.com/technology/Wi-Fi" target="_blank">Britannica – Wi‑Fi (Technology Overview)</a></li>
+        <li><a class = link href="https://www.techradar.com/how-to/how-to-speed-up-your-internet" target="_blank">TechRadar – How to Speed Up Your Internet</a></li>
+               <li><a class = link href="https://www.highspeedinternet.com/resources/why-is-my-internet-so-slow" target="_blank">High Speed Internet – Why is My Internet so slow?</a></li>
+                      <li><a class = link href="https://www.quora.com/Why-does-my-Internet-slow-down-from-1am-4am" target="_blank">Quora – Why does my Internet slow down from 1am-4am?</a></li>
+                             <li><a class = link href="https://www.fusionconnect.com/blog/too-many-devices-on-wifi-how-to-identify-and-correct-limited-wifi-connections" target="_blank">Fusion Connect – Too Many Devices on WiFi? How to Identify and Correct Limited WiFi Connections</a></li>
+        <li>Our own observations at Home and in School</li>
+      </ul>
+    </section>
+    
+        <section id="contact">
+      <h2>Contact Us!</h2>
+      <ul>
+        <li><a class = link href="https://www.facebook.com/mikael.jastine.aragon.2025/" target="_blank">Mikael Aragon: [Leader, Image Creator, Coder, Researcher, Writer]</a></li>
+        <li><a class = link href="https://www.facebook.com/zia.xabina.2024" target="_blank">Zia Balato: [Assistant-Leader, Researcher, Coder, Writer]</a></li>
+        <li><a class = link href="https://www.facebook.com/jacobkyle.angulo.7" target="_blank">Jacob Angulo: [Researcher, Writer]</a></li>
+        <li><a class = link href="https://www.facebook.com/lara.gelacio.58" target="_blank">Lara Gelacio: [Researcher, Writer]</a></li>
+        <li><a class = link href="https://www.facebook.com/tuffyaxley.fallaria" target="_blank">Tuff Fallaria: [Researcher, Writer]</a></li>
+        <li><a class = link href="https://www.facebook.com/jadealexis.arguelles.96" target="_blank">Jade Arguelles: [Researcher, Writer]</a></li>
+        <li><a class = link href="https://www.facebook.com/profile.php?id=61579081804117#" target="_blank">Ashley Delos Santos: [Researcher, Writer]</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p style="footer"><strong>Created by:</strong> Group #2 | Life Labs 8 – Quarter 3 | TLE Area – Slow Internet RCA (5 Whys)</p>
+    <p style="footer">&copy; 2026 TLE‑LIFE LABS 8. All Rights Reserved.</p>
+  </footer>
+
+</body>
+
+</html>
