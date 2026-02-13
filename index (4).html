@@ -1,306 +1,576 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TLE Area: Slow Internet – Root Cause Analysis (5 Whys)</title>
-
+  <title>Slow Internet - Root Cause Analysis</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    * {
       margin: 0;
       padding: 0;
-      background-color: #f3f6ff; /* pastel light blue */
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0f8ff 0%, #f5f5ff 50%, #f8f9fa 100%);
+      line-height: 1.8;
       color: #333;
+      padding-bottom: 3rem;
+      min-height: 100vh;
+      font-size: 1.1rem;
     }
 
     header {
+      background: linear-gradient(135deg, #fab1a0 0%, #ffafbd 100%);
+      color: white;
       text-align: center;
-      background-color: #000000; /* pastel blue */
-      padding-left: 20px;
-      padding-top: 20px;
-      padding-right:20px;
-      border-bottom: 5px solid #000000;
+      padding: 3rem 1rem;
+      box-shadow: 0 8px 25px rgba(250,177,160,0.3);
     }
 
     header img {
       width: 100px;
       height: 100px;
-      vertical-align: middle;
       border-radius: 50%;
+      border: 4px solid white;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 8px 25px rgba(255,255,255,0.4);
     }
 
     header h1 {
-      margin: 10px 0 5px;
-      color: #ffffff;
-      font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
-    p.header {
-    color: #ffffff;
-  font-family: "Lucida Console", "Courier New", monospace;
-    }
-    
-        p.footer {
-    color: #000000;
-  font-family: "Lucida Console", "Courier New", monospace;
-    }
-    
-    
-    
-        p.header2 {
-    color: #ffffff;
-    font-weight: bold;
-    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+
+    .subtitle {
+      font-size: 1.3rem;
+      opacity: 0.95;
+      font-weight: 400;
     }
 
     nav {
-      background-color: #ffffff; /* pastel mint green */
-      padding: 12px;
-      text-align: center;
+      background: rgba(255,255,255,0.98);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      overflow: hidden;
     }
 
-    nav a {
-      color: #000000;
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .nav-menu {
+      list-style: none;
+      margin: 0;
+      padding: 0.4rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+
+    .nav-item {
+      flex: 1;
+      min-width: 160px;
+      border-bottom: none;
+    }
+
+    .nav-button {
+      color: #57606f;
       text-decoration: none;
-      margin: 0 15px;
-      font-weight: bold;
-      transition: color 0.3s;
-    }
-    
-      a {
-      color: #ffffff;
-  font-family: "Lucida Console", "Courier New", monospace;
-               font-weight: bold;
-    }
-    
-          a.link {
-      color: #000000;
-  font-family: "Lucida Console", "Courier New", monospace;
-               font-weight: bold;
+      display: block;
+      padding: 0.9rem 1.2rem;
+      font-weight: 500;
+      font-size: 1rem;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      margin: 0.2rem 0.1rem;
+      white-space: nowrap;
     }
 
-    nav a:hover {
-      color: #8C8C8C; /* pastel pink */
+    .nav-button:hover,
+    .nav-button.active {
+      background: rgba(250,177,160,0.2);
+      color: #e17055;
+      transform: translateY(-2px);
     }
 
-    li {
-                    font-family: Garamond, serif;
-                   font-size: 20px;
+    .nav-panel {
+      max-height: 0;
+      overflow: hidden;
+      background: rgba(255,255,255,0.9);
+      transition: max-height 0.4s ease-out;
+      backdrop-filter: blur(5px);
     }
 
-    main {
-      max-width: 1100px;
-      margin: 30px auto;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.12);
+    .nav-panel.active {
+      max-height: 600px;
     }
 
-    h2 {
-      color: #000000;
-      border-bottom: 3px solid #C7C7C7;
-      padding-bottom: 5px;
-            text-align: center;
-    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
-    }
-    
-
-    section {
-      margin-bottom: 40px;
+    .container {
+      max-width: 1200px;
+      margin: 2.5rem auto;
+      padding: 0 2rem;
     }
 
-    blockquote {
-      font-style: italic;
-      background: #D6D6D6;
-      border-left: 5px solid #828282;
-      padding: 10px 20px;
-      margin: 15px 0;
-        font-family: "Lucida Console", "Courier New", monospace;
+    .section {
+      display: none;
+      background: rgba(255,255,255,0.95);
+      padding: 3.5rem;
+      margin-bottom: 3rem;
+      border-radius: 25px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.7);
+      backdrop-filter: blur(12px);
+    }
+
+    .section.active {
+      display: block;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section h2 {
+      font-size: 2.8rem;
+      color: #2d3748;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 700;
+    }
+
+    .highlight {
+      background: #fff5f7;
+      border-left: 6px solid #fab1a0;
+      padding: 2.5rem;
+      border-radius: 0 18px 18px 0;
+      margin: 2rem 0;
+      font-size: 1.25rem;
+      line-height: 1.9;
+      box-shadow: 0 8px 25px rgba(250,177,160,0.15);
+    }
+
+    .problem-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+      margin: 2.5rem 0;
+    }
+
+    .problem-item, .solution-card {
+      background: white;
+      border: 2px solid #f1f3f4;
+      padding: 2rem;
+      border-radius: 18px;
+      font-weight: 600;
+      font-size: 1.15rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: all 0.4s ease;
+    }
+
+    .problem-item:hover, .solution-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      border-color: #fab1a0;
     }
 
     .why-box {
-      background-color: #333333; /* pastel pink */
-      border-left: 5px solid #9E9E9E;
-      padding: 10px 20px;
-      margin-bottom: 15px;
-      border-radius: 3px;
-  font-family: "Lucida Console", "Courier New", monospace;
-             color: #ffffff;
+      background: white;
+      border-left: 6px solid #fab1a0;
+      padding: 2.2rem;
+      margin: 1.5rem 0;
+      border-radius: 0 18px 18px 0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: all 0.4s ease;
+      font-size: 1.2rem;
+    }
+
+    .why-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(250,177,160,0.2);
+    }
+
+    .why-box.root-cause {
+      border-left-color: #fdcb6e;
+      background: #fff8e1;
+      box-shadow: 0 12px 35px rgba(253,203,110,0.25);
+    }
+
+    .why-number {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2d3748;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .solution-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    .contact-card {
+      background: white;
+      border: 2px solid #f1f3f4;
+      padding: 2.5rem;
+      border-radius: 18px;
+      text-align: center;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      font-size: 1.15rem;
+    }
+
+    .contact-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 45px rgba(250,177,160,0.2);
+      border-color: #fab1a0;
+    }
+
+    .contact-card a {
+      color: #e17055;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.2rem;
+      display: block;
+      margin-top: 1rem;
+    }
+
+    .contact-card a:hover {
+      text-decoration: underline;
+    }
+
+    .image-center {
+      width: 100%;
+      max-width: 550px;
+      display: block;
+      margin: 2.5rem auto;
+      border-radius: 18px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.15);
+      border: 3px solid rgba(255,255,255,0.8);
+    }
+
+    .sources {
+      background: #f8f9fa;
+      padding: 2.5rem;
+      border-radius: 18px;
+      margin-top: 2.5rem;
+      font-size: 1.15rem;
+    }
+
+    .sources h3 {
+      color: #2d3748;
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+    }
+
+    .sources ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .sources li {
+      margin-bottom: 1rem;
+      padding-left: 2rem;
+      position: relative;
+      font-size: 1.15rem;
+      line-height: 1.8;
+    }
+
+    .sources li:before {
+      content: "📚";
+      position: absolute;
+      left: 0;
+      font-size: 1.4rem;
     }
 
     footer {
-      background-color: #ffffff;
-      color: #2a4d7a;
+      background: rgba(255,255,255,0.95);
+      color: #4a5568;
       text-align: center;
-      padding: 18px 0;
-      margin-top: 40px;
-        font-family: "Lucida Console", "Courier New", monospace;
+      padding: 3rem;
+      border-radius: 25px;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.1);
+      backdrop-filter: blur(12px);
+      margin: 0 2rem 3rem;
+      font-size: 1.2rem;
     }
 
-    footer a {
-      color: #ffffff;
-      text-decoration: none;
-      margin: 0 10px;
-      
-        font-family: "Lucida Console", "Courier New", monospace;
+    @media (max-width: 768px) {
+      header h1 { font-size: 2.2rem; }
+      .section { padding: 2.5rem 1.5rem; }
+      .contact-grid, .solution-grid { grid-template-columns: 1fr; }
+      body { font-size: 1rem; }
+      .nav-button { 
+        font-size: 0.9rem; 
+        padding: 0.8rem 0.6rem; 
+        min-width: 120px;
+      }
     }
-
-    footer a:hover {
-      text-decoration: underline;
-        font-family: "Lucida Console", "Courier New", monospace;
-    }
-    
-    p {
-     font-family: Garamond, serif;
-       font-size: 20px;
-    }
-    
-     img.mid {
-      border-radius: 5px;
-        border: 5px solid #000000;
-  margin: auto;
-    display: block;
-    }
-    
   </style>
 </head>
-
 <body>
-
   <header>
-    <!-- ICT Logo -->
-    <img src="https://i.ibb.co/21vw60Ms/inbound6025275749554753117.png" alt="ICT Logo">
-    <h1>ㆍ TLE Area: Slow Internet ㆍ</h1>
-    <p class = header>Root Cause Analysis using the 5 Whys Technique</p>
-    <p class = header><strong>Group #2 – Life Labs 8, Quarter 3</strong></p>
-    <p class = header2 style="font-size: 24px;"><strong>Navigation</strong></p>
+    <img src="https://i.ibb.co/FbfqGm7Q/Untitled1959-20260213180711.png" alt="School Logo">
+    <h1>Slow Internet Analysis</h1>
+    <p class="subtitle">Root Cause Analysis Project - Group 2, Grade 8 TLE</p>
   </header>
 
   <nav>
-    <a href="#intro">Introduction</a>
-    <a href="#problem">Main Problem</a>
-    <a href="#analysis">Analysis</a>
-    <a href="#rootcause">Root Cause</a>
-    <a href="#solutions">Solutions</a>
-    <a href="#sources">Sources</a>
-    <a href="#contact">Contact</a>
+    <div class="nav-container">
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <button class="nav-button active" onclick="openSection(0)">🏠 Introduction</button>
+          <div class="nav-panel active"></div>
+        </li>
+        <li class="nav-item">
+          <button class="nav-button" onclick="openSection(1)">⚠️ Main Problem</button>
+          <div class="nav-panel"></div>
+        </li>
+        <li class="nav-item">
+          <button class="nav-button" onclick="openSection(2)">🔍 5 Whys Analysis</button>
+          <div class="nav-panel"></div>
+        </li>
+        <li class="nav-item">
+          <button class="nav-button" onclick="openSection(3)">💡 Solutions</button>
+          <div class="nav-panel"></div>
+        </li>
+        <li class="nav-item">
+          <button class="nav-button" onclick="openSection(4)">👥 Contacts</button>
+          <div class="nav-panel"></div>
+        </li>
+        <li class="nav-item">
+          <button class="nav-button" onclick="openSection(5)">📋 Conclusion</button>
+          <div class="nav-panel"></div>
+        </li>
+      </ul>
+    </div>
   </nav>
 
-  <main>
-
-    <section id="intro">
-      <h2>Introduction</h2>
-      <p>
-        This webpage explains our Root Cause Analysis (RCA) about the issue of <strong>Slow Internet</strong> in school and at home. We used the 5 Whys method to understand why slow internet happens and how we can help solve it. Since the internet is important for learning, this issue can affect students schoolwork and online schoolwork. As Grade 8 students, we analyzed the problem in a simple and clear way and shared some  solutions so we could help improve internet connection.
-      </p>
+  <div class="container">
+    <section id="section0" class="section active">
+      <h2>🏠 Project Introduction</h2>
+      <div class="highlight">
+        <p>Slow internet makes it hard for Grade 8 students to do online classes and homework. Our Group 2 used the <strong>5 Whys method</strong> - we kept asking "Why?" five times to find the real reason for slow internet.</p>
+        <p>We checked internet in our homes, tested speeds, asked classmates and parents questions, and found out what makes internet slow during study time. This project shows what we found and easy fixes for families.</p>
+      </div>
+      <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=550&fit=crop" alt="Students struggling with online learning" class="image-center">
     </section>
 
-    <section id="problem">
-      <h2>Main Problem</h2>
-      <p>
-        Many students experience <strong>Slow Internet</strong> when doing online tasks, research, or submitting activities, which makes studying more difficult. Because of poor connection, pages load slowly, files fail to upload, and online classes are interrupted. This causes delays, stress, and difficulty finishing school requirements on time, especially when deadlines are strict. As a result, students may feel frustrated, lose focus, and struggle to perform their best in school.
-      </p>
+    <section id="section1" class="section">
+      <h2>⚠️ Main Problems</h2>
+      <p>These are the biggest internet problems Grade 8 students face every day:</p>
+      
+      <div class="problem-list">
+        <div class="problem-item">
+          <strong>📱 Websites Load Very Slowly</strong><br>
+          Google Classroom, DepEd websites, and research pages take too long to open. Students wait and wait for pages to load while trying to do research or check assignments. This makes studying take much longer than it should.
+        </div>
+        <div class="problem-item">
+          <strong>📤 File Upload Failures</strong><br>
+          Google Drive files, homework assignments, and project submissions take forever to upload or just stop working completely. Students miss deadlines because their work won't send and teachers mark them late.
+        </div>
+        <div class="problem-item">
+          <strong>🎥 Video Classes Keep Pausing</strong><br>
+          Zoom classes, recorded lessons, and educational YouTube videos keep stopping to buffer. Students miss what the teacher says and can't follow along with important lessons or instructions.
+        </div>
+        <div class="problem-item">
+          <strong>⏰ Late Homework & Stress</strong><br>
+          Because internet is so slow, students can't finish assignments or submit on time. They get low grades, parents get angry, and everyone feels stressed about schoolwork that won't upload.
+        </div>
+      </div>
+      
+      <img src="https://images.unsplash.com/photo-1558494949-ef0d38d3f3f4?w=550&fit=crop" alt="Frustrated student waiting for slow loading" class="image-center">
     </section>
-    
-      <img class="mid" src="https://i.ibb.co/1fgkTb0p/Untitled-2.png" alt="image">
 
-    <section id="analysis">
-      <h2>Root Cause Analysis Using 5 Whys</h2>
-      <p>
-        Here is the 5 Whys breakdown to understand the real reason why slow internet happens:
-      </p>
-
+    <section id="section2" class="section">
+      <h2>🔍 5 Whys Root Cause Analysis</h2>
+      <p>Our group used the 5 Whys method step by step to find the real cause:</p>
+      
       <div class="why-box">
-        <strong>1st Why:</strong> Why is the internet slow?<br>
-        ➤ Several Factors affect Internet Speed, such as the quality of the Service Provider, the distance between the device, the amount of devices connected to the router and the router and the performance of the router itself.
+        <span class="why-number">❓ 1st Why:</span>
+        Too many phones, laptops, tablets and TVs all connected to the same router during study time when everyone is home.
       </div>
 
       <div class="why-box">
-        <strong>2nd Why:</strong> Why does it lag or load slowly?<br>
-        ➤ Because the router is handling too much devices connected to it, Many connected devices may be overwhelming and can cause overheating, as these devices may be doing heavy network activities such as downloading large files, streaming movies or installing games, which can slow down the network for everyone.
+        <span class="why-number">❓ 2nd Why:</span>
+        Every house only has one Wi-Fi router for the whole family with no separate networks.
       </div>
 
       <div class="why-box">
-        <strong>3rd Why:</strong> Why are many devices connected?<br>
-        ➤ Because only one router is being used to support all the devices and buying more routers is expensive, as a result, all users rely on a single router, causing heavy lag or slowness.
+        <span class="why-number">❓ 3rd Why:</span>
+        Cheap internet plans can't handle many devices using internet at once.
       </div>
 
       <div class="why-box">
-        <strong>4th Why:</strong> Why cant the Internet handle it all?<br>
-        ➤ Because the internet plan does not provide enough speed or strength to support the connected devices all simultaneously connected to the router.
+        <span class="why-number">❓ 4th Why:</span>
+        Parents pick the cheapest internet plans instead of faster ones the family needs.
       </div>
 
-      <div class="why-box">
-        <strong>5th Why:</strong> Why wasn’t the Internet plan based on usage needs?<br>
-        ➤ Because the internet plan is selected based off on budget rather than how many devices and applications require a dependable connection for each of the devices.
+      <div class="why-box root-cause">
+        <span class="why-number">✅ MAIN PROBLEM:</span>
+        <strong>Cheap slow internet + too many devices on one router = internet always slow at night</strong>
       </div>
-
-      <blockquote>
-       <strong>Root Cause:</strong> 
-The root cause of the slow internet is the router or the internet being overwhelmed or overworked or overheated by too much devices sharing it and an internet plan that isnt strong enough or fast enough to be reliable for these devices, combined with a poor quality router, distance from the device to the router and the Service provider and more.
-      </blockquote>
-
+      
+      <img src="https://images.unsplash.com/photo-1555063728-6a420243ca50?w=550&fit=crop" alt="Overloaded home router with many devices" class="image-center">
     </section>
 
-    <section id="rootcause">
-      <h2>Identified Root Cause</h2>
-      <p>
-        Many students experience slow internet when doing online tasks, researching, or submitting activities, and this makes studying more difficult. With a weak connection, pages take a long time to load, files sometimes fail to upload, and online classes get interrupted or lag during lessons. These problems cause delays, stress, and difficulty finishing school requirements on time, especially when deadlines are strict. Because of this, students may feel frustrated, lose focus, and struggle to perform at their best in school.
-
-After analyzing the situation, <strong>we found that the main reason for slow internet is that the internet plan being used is not fast enough for the number of devices connected. When many people in the household are online at the same time, the connection becomes crowded and the speed is divided, leading to slow browsing and unstable internet.</strong>
-      </p>
-    </section>
-    
-      <img class="mid" src="https://i.ibb.co/0VpVJmJW/inbound1238132746023514993.png" alt="image">
-
-    <section id="solutions">
-      <h2>Proposed Solutions and Preventive Measures</h2>
-      <ul>
-        <li>Upgrade to a better internet plan with higher speed and larger strength to support multiple devices and give a dependable connection for it.</li>
-        <li>Limit the number of connected devices during important events such as online classes or doing homework to reduce the lag during these times.</li>
-        <li>Place the router in an open and larged space area for it to have a large coverage among all the devices and to improve signal strength.</li>
-        <li>Do regular router resets to refresh the connection and to refresh the amount of the devices connected to the router.</li>
-        <li>Use an Ethernet cable for devices that require uninterupted, stable and depenendable internet connections during important events such as studying.</li>
-      </ul>
-    </section>
-    
-         <img class="mid" src="https://i.ibb.co/yF5wpNdT/Untitled-2-1.png" alt="image">
-
-    <section id="sources">
-      <h2>Resources / Sources</h2>
-      <ul>
-        <li><a class = link href="https://www.britannica.com/technology/Wi-Fi" target="_blank">Britannica – Wi‑Fi (Technology Overview)</a></li>
-        <li><a class = link href="https://www.techradar.com/how-to/how-to-speed-up-your-internet" target="_blank">TechRadar – How to Speed Up Your Internet</a></li>
-               <li><a class = link href="https://www.highspeedinternet.com/resources/why-is-my-internet-so-slow" target="_blank">High Speed Internet – Why is My Internet so slow?</a></li>
-                      <li><a class = link href="https://www.quora.com/Why-does-my-Internet-slow-down-from-1am-4am" target="_blank">Quora – Why does my Internet slow down from 1am-4am?</a></li>
-                             <li><a class = link href="https://www.fusionconnect.com/blog/too-many-devices-on-wifi-how-to-identify-and-correct-limited-wifi-connections" target="_blank">Fusion Connect – Too Many Devices on WiFi? How to Identify and Correct Limited WiFi Connections</a></li>
-        <li>Our own observations at Home and in School</li>
-      </ul>
-    </section>
-    
-        <section id="contact">
-      <h2>Contact Us!</h2>
-      <ul>
-        <li><a class = link href="https://www.facebook.com/mikael.jastine.aragon.2025/" target="_blank">Mikael Aragon: [Leader, Image Creator, Coder, Researcher, Writer]</a></li>
-        <li><a class = link href="https://www.facebook.com/zia.xabina.2024" target="_blank">Zia Balato: [Assistant-Leader, Researcher, Coder, Writer]</a></li>
-        <li><a class = link href="https://www.facebook.com/jacobkyle.angulo.7" target="_blank">Jacob Angulo: [Researcher, Writer]</a></li>
-        <li><a class = link href="https://www.facebook.com/lara.gelacio.58" target="_blank">Lara Gelacio: [Researcher, Writer]</a></li>
-        <li><a class = link href="https://www.facebook.com/tuffyaxley.fallaria" target="_blank">Tuff Fallaria: [Researcher, Writer]</a></li>
-        <li><a class = link href="https://www.facebook.com/jadealexis.arguelles.96" target="_blank">Jade Arguelles: [Researcher, Writer]</a></li>
-        <li><a class = link href="https://www.facebook.com/profile.php?id=61579081804117#" target="_blank">Ashley Delos Santos: [Researcher, Writer]</a></li>
-      </ul>
+    <section id="section3" class="section">
+      <h2>💡 Practical Solutions</h2>
+      <p>Our group tested these solutions and they work! Here are the best fixes:</p>
+      
+      <div class="solution-grid">
+        <div class="solution-card">
+          <strong>🚀 Get Faster Internet</strong><br>
+          Change to faster internet plan. Gives enough speed for everyone at home.
+        </div>
+        <div class="solution-card">
+          <strong>📴 Turn Off Extra Devices</strong><br>
+          Turn OFF phones, games, and TVs during homework time. Keep only student laptop on.
+        </div>
+        <div class="solution-card">
+          <strong>📍 Move Router Better</strong><br>
+          Put router in middle of house, high up, away from walls and microwave.
+        </div>
+        <div class="solution-card">
+          <strong>🔄 Restart Router</strong><br>
+          Unplug router for 30 seconds. Fixes most speed problems.
+        </div>
+        <div class="solution-card">
+          <strong>🔌 Use Internet Cable</strong><br>
+          Plug laptop directly into router with cable. Gets full fast speed every time.
+        </div>
+        <div class="solution-card">
+          <strong>📶 Router Settings</strong><br>
+          Turn on setting to make student laptop faster than phones and TVs.
+        </div>
+      </div>
+      
+      <img src="https://images.unsplash.com/photo-1613434039587-bc0f2d6a2dfa?w=550&fit=crop" alt="Router with ethernet cables and WiFi signal" class="image-center">
     </section>
 
-  </main>
+    <section id="section4" class="section">
+      <h2>👥 Group 2 Team Members</h2>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <strong>Mikael Aragon</strong><br>
+          <em>Project Leader<br>Made the website</em><br>
+          <a href="https://www.facebook.com/mikael.jastine.aragon.2025/" target="_blank">📱 Facebook</a>
+        </div>
+        <div class="contact-card">
+          <strong>Zia Balato</strong><br>
+          <em>Assistant Leader<br>Collected data</em><br>
+          <a href="https://www.facebook.com/zia.xabina.2024" target="_blank">📱 Facebook</a>
+        </div>
+        <div class="contact-card">
+          <strong>Jacob Angulo</strong><br>
+          <em>Researcher<br>Did speed tests</em><br>
+          <a href="https://www.facebook.com/jacobkyle.angulo.7" target="_blank">📱 Facebook</a>
+        </div>
+        <div class="contact-card">
+          <strong>Lara Gelacio</strong><br>
+          <em>Writer<br>Made charts</em><br>
+          <a href="https://www.facebook.com/lara.gelacio.58" target="_blank">📱 Facebook</a>
+        </div>
+        <div class="contact-card">
+          <strong>Tuff Fallaria</strong><br>
+          <em>Tester<br>Tested solutions</em><br>
+          <a href="https://www.facebook.com/tuffyaxley.fallaria" target="_blank">📱 Facebook</a>
+        </div>
+        <div class="contact-card">
+          <strong>Jade Arguelles</strong><br>
+          <em>Designer<br>Designed layout</em><br>
+          <a href="https://www.facebook.com/jadealexis.arguelles.96" target="_blank">📱 Facebook</a>
+        </div>
+        <div class="contact-card">
+          <strong>Ashley Delos Santos</strong><br>
+          <em>Editor<br>Checked work</em><br>
+          <a href="https://www.facebook.com/profile.php?id=61579081804117" target="_blank">📱 Facebook</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="section5" class="section">
+      <h2>📋 Conclusion & Key Findings</h2>
+      <div class="highlight">
+        <p>We found that <strong>most slow internet happens because families get cheap internet but use too many phones, TVs, and laptops all at the same time at night</strong>.</p>
+        <p>The biggest problem is <strong>too many devices sharing slow internet</strong>. When everyone uses internet together, nobody gets good speed. That's why classes keep stopping!</p>
+      </div>
+      
+      <div class="sources">
+        <h3>📚 Research Sources</h3>
+        <ul>
+          <li>Internet troubleshooting guides from tech websites</li>
+          <li>Student WiFi troubleshooting guides</li>
+          <li>Home network speed tips from tech tutorials</li>
+          <li>5 Whys problem-solving method</li>
+          <li>Classmate and parent interviews</li>
+          <li>Speed test results from different households</li>
+        </ul>
+      </div>
+      
+      <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=550&fit=crop" alt="Happy students with working internet" class="image-center">
+    </section>
+  </div>
 
   <footer>
-    <p style="footer"><strong>Created by:</strong> Group #2 | Life Labs 8 – Quarter 3 | TLE Area – Slow Internet RCA (5 Whys)</p>
-    <p style="footer">&copy; 2026 TLE‑LIFE LABS 8. All Rights Reserved.</p>
+    <p><strong>🏆 Group 2 - Grade 8 Life Labs </strong></p>
+    <p>TLE </p>
   </footer>
 
+  <script>
+    function openSection(index) {
+      const sections = document.querySelectorAll('.section');
+      const navButtons = document.querySelectorAll('.nav-button');
+      const navPanels = document.querySelectorAll('.nav-panel');
+      
+      sections.forEach((section, i) => {
+        section.classList.remove('active');
+      });
+      
+      navButtons.forEach((btn, i) => {
+        btn.classList.remove('active');
+      });
+      
+      navPanels.forEach((panel, i) => {
+        panel.classList.remove('active');
+      });
+      
+      sections[index].classList.add('active');
+      navButtons[index].classList.add('active');
+      navPanels[index].classList.add('active');
+    }
+  </script>
 </body>
-
 </html>
